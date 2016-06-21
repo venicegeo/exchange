@@ -8,6 +8,11 @@ git+git://github.com/GeoNode/geonode-ratings.git@1190af087157e91bb873e624f161b1e
 git+git://github.com/GeoNode/geonode-user-accounts.git@475bf0875658dc4dc66120e3322643ad7cc54973#egg=geonode-user-accounts
 git+git://github.com/GeoNode/geonode-user-messages.git@c0167cb2d956d84119ec5468ab3ceb398576f871#egg=geonode-user-messages
 git+git://github.com/ROGUE-JCTD/django-maploom.git@bc4d3dd49edd9932f8ec2d2061ad37d78a603d07#egg=django-maploom
+git+git://github.com/terranodo/django-mapproxy.git@registry#egg=django-mapproxy
+git+git://github.com/cga-harvard/HHypermap.git@registry#egg=hypermap
+git+git://github.com/terranodo/mapproxy.git@master#egg=mapproxy
+git+git://github.com/geopython/pycsw.git@master#egg=pycsw
+git+git://github.com/ProminentEdge/django-osgeo-importer@master#egg=django-osgeo-importer
 dj-database-url==0.4.1
 django-storages==1.1.8
 boto==2.38.0
@@ -25,8 +30,5 @@ supervisor==3.2.3
 gunicorn==19.4.5
 corsa==0.1.2
 python-resize-image==1.1.10
-git+git://github.com/terranodo/django-mapproxy.git@registry#egg=django-mapproxy
-git+git://github.com/cga-harvard/HHypermap.git@registry#egg=hypermap
-git+git://github.com/terranodo/mapproxy.git@master#egg=mapproxy
-git+git://github.com/geopython/pycsw.git@master#egg=pycsw
+numpy==1.11.0
 pdb

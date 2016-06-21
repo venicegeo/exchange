@@ -22,7 +22,8 @@ from django.conf.urls import patterns, url
 from django.views.generic import TemplateView
 from maploom.geonode.urls import urlpatterns as maploom_urls
 from hypermap.urls import urlpatterns as hypermap_urls
-from geonode.urls import *
+from osgeo_importer.urls import urlpatterns as osgeo_importer_urls
+from geonode.urls import urlpatterns as geonode_urls
 from . import views
 
 js_info_dict = {
@@ -38,7 +39,9 @@ urlpatterns = patterns(
         name='map_metadata_detail'),
     url(r'^wfsproxy/', views.geoserver_reverse_proxy,
             name='geoserver_reverse_proxy')
- ) + urlpatterns
+ )
 
+urlpatterns += geonode_urls
 urlpatterns += maploom_urls
 urlpatterns += hypermap_urls
+urlpatterns += osgeo_importer_urls
