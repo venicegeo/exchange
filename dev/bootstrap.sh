@@ -79,6 +79,9 @@ exchange_setup()
     if ! grep -q 'django-runserver' /home/vagrant/.bashrc; then
         printf "\nalias django-runserver='/vagrant/.venv/bin/python /vagrant/manage.py runserver 0.0.0.0:8000'" >> /home/vagrant/.bashrc
     fi
+    if ! grep -q 'django-celeryworker' /home/vagrant/.bashrc; then
+        printf "\nalias django-celeryworker='/vagrant/.venv/bin/python /vagrant/manage.py celery worker -E --loglevel=DEBUG'" >> /home/vagrant/.bashrc
+    fi
     if ! grep -q 'django-collectstatic' /home/vagrant/.bashrc; then
         printf "\nalias django-collectstatic='/vagrant/.venv/bin/python /vagrant/manage.py collectstatic'" >> /home/vagrant/.bashrc
     fi
