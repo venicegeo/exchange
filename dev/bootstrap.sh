@@ -138,10 +138,24 @@ database_setup()
     else
         psql -U postgres -c "ALTER USER exchange WITH PASSWORD 'boundless';"
     fi
+
+    OSUSER=$(psql -U postgres -c '\du' | cut -d \| -f 1 | grep -w osgeo | wc -l)
+    if [ $OSUSER == 0 ]; then
+        psql -U postgres -c "CREATE USER osgeo with password 'osgeo';"
+    else
+        psql -U postgres -c "ALTER USER osgeo with password 'osgeo';"
+    fi
+
     EXCHANGE_DB=$(psql -U postgres -lqt | cut -d \| -f 1 | grep -w exchange | wc -l)
     if [ $EXCHANGE_DB == 1 ]; then
         psql -U postgres -c "DROP DATABASE exchange;"
     fi
+
+    OSGEO_DB=$(psql -U postgres -lqt | cut -d \| -f 1 | grep -w osgeo_importer_test | wc -l)
+    if [ $OSGEO_DB == 1 ]; then
+        psql -U postgres -c "DROP DATABASE osgeo_importer_test;"
+    fi
+
     psql -U postgres -c "CREATE DATABASE exchange OWNER exchange;"
     EXCHANGE_DATA_DB=$(psql -U postgres -lqt | cut -d \| -f 1 | grep -w exchange_data | wc -l)
     if [ $EXCHANGE_DATA_DB == 1 ]; then
@@ -151,6 +165,11 @@ database_setup()
     psql -U postgres -d exchange_data -c 'CREATE EXTENSION postgis;'
     psql -U postgres -d exchange_data -c 'GRANT ALL ON geometry_columns TO PUBLIC;'
     psql -U postgres -d exchange_data -c 'GRANT ALL ON spatial_ref_sys TO PUBLIC;'
+
+    psql -U postgres -c "CREATE DATABASE osgeo_importer_test OWNER osgeo;"
+    psql -U postgres -d osgeo_importer_test -c "CREATE EXTENSION postgis"
+    psql -U postgres -d osgeo_importer_test -c 'GRANT ALL ON geometry_columns TO PUBLIC;'
+    psql -U postgres -d osgeo_importer_test -c 'GRANT ALL ON spatial_ref_sys TO PUBLIC;'
 }
 
 gs-dev_init()
