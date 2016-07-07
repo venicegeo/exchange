@@ -19,7 +19,6 @@
 #########################################################################
 
 from django.conf.urls import patterns, url
-from django.views.generic import TemplateView
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from maploom.geonode.urls import urlpatterns as maploom_urls
