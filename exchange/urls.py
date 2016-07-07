@@ -20,9 +20,12 @@
 
 from django.conf.urls import patterns, url
 from django.views.generic import TemplateView
+from django.conf import settings
+from django.contrib.auth.decorators import login_required
 from maploom.geonode.urls import urlpatterns as maploom_urls
 from hypermap.urls import urlpatterns as hypermap_urls
 from osgeo_importer.urls import urlpatterns as osgeo_importer_urls
+from osgeo_importer.views import FileAddView
 from geonode.urls import urlpatterns as geonode_urls
 from . import views
 
@@ -41,7 +44,15 @@ urlpatterns = patterns(
             name='geoserver_reverse_proxy')
  )
 
+
+if 'osgeo_importer' in settings.INSTALLED_APPS:
+    # if using osgeo_importer, intercept the usual layers/upload view in order
+    # to use alternate UI (from django_osgeo_importer)
+    urlpatterns += [url(r'^layers/upload$',
+                        login_required(FileAddView.as_view()),
+                        name='layer_upload')]
+    urlpatterns += osgeo_importer_urls
+
 urlpatterns += geonode_urls
 urlpatterns += maploom_urls
 urlpatterns += hypermap_urls
-urlpatterns += osgeo_importer_urls
