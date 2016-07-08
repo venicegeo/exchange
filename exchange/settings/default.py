@@ -151,15 +151,14 @@ DATABASE_URL = os.getenv('DATABASE_URL', SQLITEDB)
 DATABASES['default'] = dj_database_url.parse(DATABASE_URL,
                                              conn_max_age=600)
 POSTGIS_URL = os.environ.get('POSTGIS_URL', None)
-OSGEO_DATASTORE_URL = os.environ.get('OSGEO_DATASTORE_URL', None)
 if POSTGIS_URL is not None:
     DATABASES['exchange_imports'] = dj_database_url.parse(POSTGIS_URL,
                                                           conn_max_age=600)
     OGC_SERVER['default']['DATASTORE'] = 'exchange_imports'
 
-if OSGEO_DATASTORE_URL is not None:
-    DATABASES['datastore'] = dj_database_url.parse(OSGEO_DATASTORE_URL,
-                                                 conn_max_age=600)
+    if 'osgeo_importer' in INSTALLED_APPS:
+        # specify which postgis db osgeo_importer name should reference
+        OSGEO_DATASTORE = 'exchange_imports'
 
 UPLOADER = {
     'BACKEND': 'geonode.importer',
