@@ -289,6 +289,36 @@ if REGISTRY is not None:
     }
     TAGGIT_CASE_INSENSITIVE = True
 
+# Debug logging config; override to reduce noise in prod
+LOGGING = {
+    'version': 1,
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'propagate': True,
+            'level': 'INFO',  # django's root logger is too noisy at DEBUG
+        },
+        'osgeo_importer': {
+            'handlers': ['console'],
+            'propagate': True,
+            'level': 'DEBUG',
+        },
+    },
+}
+DEBUG_PROPAGATE_EXCEPTIONS = True
+
+# uncomment the following two lines to let tastypie exceptions log to console
+# instead of response body (this will be fixed in upcoming tastypie release;
+# reference: https://github.com/django-tastypie/django-tastypie/pull/1376)
+# DEBUG = False
+# ALLOWED_HOSTS = ['*']
+
 # osgeo_importer-specific settings
 if 'osgeo_importer' in INSTALLED_APPS:
     OSGEO_IMPORTER_GEONODE_ENABLED = True
