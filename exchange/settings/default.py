@@ -77,6 +77,7 @@ TEMPLATE_CONTEXT_PROCESSORS += (
     'exchange.core.context_processors.version',
     'exchange.core.context_processors.registry',
     'exchange.core.context_processors.map_crs',
+    'exchange.core.context_processors.template_globals',
 )
 
 # middlware
@@ -95,7 +96,9 @@ INSTALLED_APPS = (
     'solo',
     'colorfield',
     'haystack',
-    'corsheaders'
+    'corsheaders',
+    'osgeo_importer',
+    'kombu.transport.django'
 ) + INSTALLED_APPS
 
 # cors settings
@@ -148,10 +151,15 @@ DATABASE_URL = os.getenv('DATABASE_URL', SQLITEDB)
 DATABASES['default'] = dj_database_url.parse(DATABASE_URL,
                                              conn_max_age=600)
 POSTGIS_URL = os.environ.get('POSTGIS_URL', None)
+OSGEO_DATASTORE_URL = os.environ.get('OSGEO_DATASTORE_URL', None)
 if POSTGIS_URL is not None:
     DATABASES['exchange_imports'] = dj_database_url.parse(POSTGIS_URL,
                                                           conn_max_age=600)
     OGC_SERVER['default']['DATASTORE'] = 'exchange_imports'
+
+if OSGEO_DATASTORE_URL is not None:
+    DATABASES['datastore'] = dj_database_url.parse(OSGEO_DATASTORE_URL,
+                                                 conn_max_age=600)
 
 UPLOADER = {
     'BACKEND': 'geonode.importer',
@@ -281,6 +289,11 @@ if REGISTRY is not None:
     }
     TAGGIT_CASE_INSENSITIVE = True
 
+# osgeo_importer-specific settings
+if 'osgeo_importer' in INSTALLED_APPS:
+    OSGEO_IMPORTER_GEONODE_ENABLED = True
+    CELERY_IMPORTS += ('osgeo_importer.tasks',)
+    CELERY_IGNORE_RESULT = False
 
 try:
     from local_settings import *  # noqa
