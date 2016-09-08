@@ -5,7 +5,7 @@
 # GeoNode is now using >= and <= in setup.py, if you need specific versions,
 # they should be listed in this file.
 git+git://github.com/boundlessgeo/django-exchange-maploom.git@5722937aba061ddcf3bd2c7b31d6cd616bafbbd9#egg=django-maploom
-git+git://github.com/geopython/pycsw.git@2.0#egg=pycsw
+pycsw==2.0.1
 geonode==2.5.2
 dj-database-url==0.4.1
 django-storages==1.1.8
@@ -30,4 +30,4 @@ elasticsearch==1.9.0
 pylibmc==1.5.1
 mapproxy==1.9.0
 djmp==0.2.8
-django-registry==0.3.10
+django-registry==0.3.11
