@@ -13,11 +13,15 @@ About
 Pre-requisites
 ==============
 
-For installation on a CentOS 7 or RHEL 7 machine, you'll need the following packages:
+For installation on CentOS 7 or RHEL 7 systems, you'll need the following packages:
 
 * Python 2.7x
 * postgresql-devel
-* gdal-devel
+* zlib-devel
+* libjpeg-devel
+* openldap-devel
+
+You'll also need [GDAL 2.0.1](http://download.osgeo.org/gdal/2.0.1/)
 
 Dependecies
 ===========
