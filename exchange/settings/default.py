@@ -333,10 +333,18 @@ LOGGING = {
     'root': {
         'handlers': ['console'],
         'level': DJANGO_LOG_LEVEL
-    }
+    },
+}
+
+LOGGING['loggers']['django.db.backends'] = {
+    'handlers': ['console'],
+    'propagate': False,
+    'level': 'WARNING',  # Django SQL logging is too noisy at DEBUG
 }
 
 # Authentication Settings
+
+# ldap
 AUTH_LDAP_SERVER_URI = os.environ.get('AUTH_LDAP_SERVER_URI', None)
 LDAP_SEARCH_DN = os.environ.get('LDAP_SEARCH_DN', None)
 if all([AUTH_LDAP_SERVER_URI, LDAP_SEARCH_DN]):
@@ -358,9 +366,17 @@ if all([AUTH_LDAP_SERVER_URI, LDAP_SEARCH_DN]):
     AUTH_LDAP_USER_SEARCH = LDAPSearch(LDAP_SEARCH_DN,
                                        ldap.SCOPE_SUBTREE, AUTH_LDAP_USER)
 
+# geoaxis
+GEOAXIS_ENABLED = str2bool(os.getenv('GEOAXIS_ENABLED', 'False'))
+if GEOAXIS_ENABLED:
+    AUTHENTICATION_BACKENDS = (
+        'exchange.auth.middleware.GeoAxisMiddleware',
+    ) + AUTHENTICATION_BACKENDS
+
 
 # NEED TO UPDATE DJANGO_MAPLOOM FOR ONLY THIS ONE VALUE
 REGISTRYURL = os.environ.get('REGISTRYURL', None)
+REGISTRY_CAT = os.environ.get('REGISTRY_CAT', 'registry')
 
 # If django-osgeo-importer is enabled, give it the settings it needs...
 if 'osgeo_importer' in INSTALLED_APPS:
@@ -392,6 +408,8 @@ try:
     from local_settings import *  # noqa
 except ImportError:
     pass
+
+CELERY_IMPORTS += ('exchange.tasks',)
 
 # Uploaded resources should be private and not downloadable by default
 # Overwrite the default of True found in the base Geonode settings
