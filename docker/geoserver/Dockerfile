@@ -4,12 +4,18 @@ FROM tomcat:9-jre8
 
 # Grab the WAR file containing the version of GeoServer Exchange depends on.
 # Avoid ADD so we can reuse this layer instead of downloading at every build.
-RUN wget --directory-prefix /tmp --progress=dot:giga https://s3.amazonaws.com/boundlessps-public/GVS/geoserver.war
+RUN wget --directory-prefix /tmp --progress=dot:giga https://exchange-development-war.s3.amazonaws.com/war/geoserver.war
 
 # Run config inside container
 RUN unzip -o /tmp/geoserver.war -d /tmp/geoserver && \
     sed -i.bak 's@<baseUrl>\([^<][^<]*\)</baseUrl>@<baseUrl>http://172.16.238.2/</baseUrl>@' \
                /tmp/geoserver/data/security/auth/geonodeAuthProvider/config.xml && \
+    sed -i.bak 's@<onlineResource>http://geoserver.org</onlineResource>@<onlineResource>http://geoserver.org</onlineResource><proxyBaseUrl>http://172.16.238.2/geoserver/</proxyBaseUrl>@' \
+               /tmp/geoserver/data/global.xml && \
+    sed -i.bak 's@localhost:\(8000\|8080\)@172.16.238.2@g' \
+               /tmp/geoserver/data/security/filter/geonode-oauth2/config.xml && \
+    sed -i.bak 's@localhost:8000@172.16.238.2@g' \
+               /tmp/geoserver/data/security/role/geonode\ REST\ role\ service/config.xml && \
     rm -rf /usr/local/tomcat/webapps/geoserver && \
     mv /tmp/geoserver $CATALINA_HOME/webapps/geoserver && \
     chmod -R 755 $CATALINA_HOME/webapps/geoserver && \

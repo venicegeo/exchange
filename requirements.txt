@@ -1,12 +1,12 @@
 --index-url https://pypi.python.org/simple/
 
-django-exchange-maploom==1.5.11
-git+git://github.com/GeoNode/geonode@1898779e8cdf104ac454bc497c6243d19f7caf90#egg=geonode
-celery==3.1.17
-dj-database-url==0.4.1
+git+git://github.com/boundlessgeo/django-exchange-maploom.git@v1.5.14#django-exchange-maploom
+git+git://github.com/GeoNode/geonode@85f7aad07255a03845616bfb6d7696e71edba0d0#egg=geonode
+dj-database-url==0.4.2
+celery==3.1.18
 django-storages==1.1.8
 boto==2.38.0
-waitress==0.9.0
+waitress==1.0.1
 whitenoise==3.2
 django-cors-headers==1.1.0
 django-classification-banner==0.1.5
@@ -16,9 +16,9 @@ psycopg2==2.6.1
 python-ldap==2.4.25
 django-auth-ldap==1.2.7
 GDAL==2.1.0
-supervisor==3.2.3
+supervisor==3.3.1
 python-resize-image==1.1.10
 django-flat-theme==1.1.3
 django-exchange-docs==1.1.2
 flake8==3.0.4
-git+git://github.com/boundlessgeo/django-osgeo-importer@b77ea961ea458b9c2ed8388ce7011a43e29f6fe9#egg=django-osgeo-importer
+elasticsearch-dsl==5.0.0

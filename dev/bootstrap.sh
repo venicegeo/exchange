@@ -4,14 +4,6 @@ set -e
 
 yum_setup()
 {
-echo "[boundlessps]
-name=boundlessps
-baseurl=https://yum.boundlessps.com/el6/x86_64
-enabled=1
-gpgcheck=1
-gpgkey=https://yum.boundlessps.com/RPM-GPG-KEY-yum.boundlessps.com
-" > /etc/yum.repos.d/boundlessps.repo
-
 echo "[rabbitmq-server]
 name=RabbitMQ Server
 baseurl=https://packagecloud.io/rabbitmq/rabbitmq-server/el/6/x86_64
@@ -26,8 +18,8 @@ gpgcheck=1
 gpgkey=https://packages.elastic.co/GPG-KEY-elasticsearch
 " > /etc/yum.repos.d/elasticsearch.repo
 
-    rpm -ivh https://yum.postgresql.org/9.6/redhat/rhel-6-x86_64/pgdg-centos96-9.6-3.noarch.rpm
-    rpm -ivh https://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+    yum -y install https://s3.amazonaws.com/exchange-development-yum/exchange-development-repo-1.0.0.noarch.rpm
+    yum -y install https://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
 
     yum -y install python27-devel \
         python27-virtualenv \
@@ -99,9 +91,9 @@ exchange_setup()
     python /vagrant/manage.py loaddata base_resources
     # migrate account after loaddata to avoid DoesNotExist profile issue
     python /vagrant/manage.py migrate account --noinput
+    # load default_oauth_apps fixture from geonode
+    python /vagrant/manage.py loaddata default_oauth_apps
 
-    #echo "from geonode.people.models import Profile; Profile.objects.create_superuser('admin', 'admin@exchange.com', 'exchange', first_name='Administrator', last_name='Exchange')" | python /vagrant/manage.py shell
-    #echo "from geonode.people.models import Profile; Profile.objects.create_user('test', 'test@exchange.com', 'exchange', first_name='Test', last_name='User')" | python /vagrant/manage.py shell
     printf "\nsource /vagrant/dev/activate\n" > /home/vagrant/.bash_profile
     if ! grep -q 'django-runserver' /home/vagrant/.bashrc; then
         printf "\nalias django-runserver='/vagrant/.venv/bin/python /vagrant/manage.py runserver 0.0.0.0:8000'" >> /home/vagrant/.bashrc
@@ -129,7 +121,7 @@ geoserver_setup()
     if [ ! -f /vagrant/dev/.geoserver/geoserver.war ]; then
 	    echo "=> Downloading GeoServer web archive"
 	    pushd /vagrant/dev/.geoserver
-	    wget https://s3.amazonaws.com/boundlessps-public/GVS/geoserver.war > /dev/null 2>&1
+	    wget https://exchange-development-war.s3.amazonaws.com/war/geoserver.war > /dev/null 2>&1
 	    unzip geoserver.war -d geoserver
 	    popd
     fi
