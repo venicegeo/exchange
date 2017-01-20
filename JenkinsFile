@@ -1,0 +1,46 @@
+node ("sl62") {
+  git url: "https://github.com/boundlessgeo/exchange.git"
+
+  stage "Clean"
+    if (fileExists('.venv/pip-selfcheck.json')) {
+      sh "rm -rf .venv"
+    }
+
+  stage "Virtualenv"
+    sh "/bin/virtualenv .venv -p /usr/bin/python"
+    sh ".venv/bin/python --version"
+    sh ".venv/bin/pip --version"
+    withEnv(["PATH=.venv/bin:$PATH"]) {
+      sh ".venv/bin/pip install --upgrade --no-cache pip"
+    }
+
+  stage "Python GDAL"
+    withEnv(["PATH=.venv/bin:$PATH"]) {
+      sh "curl -L https://pypi.python.org/packages/d1/98/27fff31ad298f3ec50db19dc3adfd8387279e158b1c6331c531c5fc7d830/GDAL-2.1.0.tar.gz -o GDAL-2.1.0.tar.gz
+      sh "tar xvf GDAL-2.1.0.tar.gz"
+      withEnv(["WORKSPACE=${pwd()}"]) {
+        dir ("./GDAL-2.1.0") {
+          sh "${env.WORKSPACE}/.venv/bin/python setup.py build_ext --include-dirs=/opt/boundless/vendor/include/"
+          sh "${env.WORKSPACE}/.venv/bin/python setup.py install"
+          sh "${env.WORKSPACE}/.venv/bin/python --version"
+        }
+      }
+      sh "rm -rf GDAL-2.1.0"
+      sh "rm GDAL-2.1.0.tar.gz"
+    }
+
+    stage "Pip Install Requirements"
+      sh ".venv/bin/pip install -r requirements.txt"
+
+    withCredentials([[$class: 'StringBinding', credentialsId: 'BLESSEXCHTHREADFIX', variable: 'THREADFIXKEY']]) {
+      stage 'Fortify Scan'
+        sh "/opt/hp_fortify_sca/bin/sourceanalyzer -b ${env.BUILD_NUMBER} src/main/java/ingest/{*.java,**/*.java}"
+        sh "/opt/hp_fortify_sca/bin/sourceanalyzer -b ${env.BUILD_NUMBER}  -scan -Xmx1G -f fortifyResults-${env.BUILD_NUMBER}.fpr"
+        sh "/bin/curl -v --insecure -H 'Accept: application/json' -X POST --form file=@fortifyResults-${env.BUILD_NUMBER}.fpr https://threadfix.devops.geointservices.io/rest/applications/56/upload?apiKey=$THREADFIXKEY"
+
+      stage 'OWASP Scan'
+        sh '/opt/dependency-check/bin/dependency-check.sh --project "Exchange" --scan "." --format "XML" --enableExperimental'
+        sh "/bin/curl -v --insecure -H 'Accept: application/json' -X POST --form file=@dependency-check-report.xml https://threadfix.devops.geointservices.io/rest/applications/56/upload?apiKey=$THREADFIXKEY"
+
+}
+
